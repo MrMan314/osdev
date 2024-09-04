@@ -4,4 +4,4 @@ ld boot.o -Ttext 0x7C00 -o boot --oformat=binary
 dd if=/dev/zero of=floppy.img bs=1024 count=1440
 dd if=boot of=floppy.img bs=512 count=1 conv=notrunc
 dd if=data of=floppy.img bs=512 seek=1 conv=notrunc
-qemu-system-i386 -hda floppy.img
+qemu-system-i386 -fda floppy.img
