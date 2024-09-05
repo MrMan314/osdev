@@ -3,9 +3,77 @@
 .GLOBAL _start
 
 _start:
+	JMP MAIN
+
+INTHAND:
+	MOV $0xA000, %AX
+	MOV %AX, %ES
+
+	PUSH %AX
+	IN $0x60, %AL
+	MOV $0x0F, %AH
+	XOR %DI, %DI
+	STOSW
+
+	MOV %AL, %BL
+	MOVB %AL, CHAR
+
+	IN $0x61, %AL
+	MOV %AL, %AH
+	OR $0x80, %AL
+	OUT %AL, $0x61
+	XCHG %AL, %AH
+	OUT %AL, $0x61
+
+	MOV $0x20, %AL
+	OUT %AL, $0x20
+	POP %AX
+
+	AND $0x80, %BL
+	JNZ .DONE
+
+.DONE:
+	IRET
+
+MAIN:
+	
 	MOV $TEST, %SI
-	CALL 0x7C48
+	CALL PRINT
+
+	XOR %AX, %AX
+	MOV %AX, %DS
+	MOV %AX, %ES
+	MOV %AX, %FS
+	MOV %AX, %GS
+	MOV %AX, %SS
+	MOVW $0x1200, %SP
+	
+	CLI
+	XOR %AX, %AX
+	MOV %AX, %ES
+	MOVW $INTHAND, %ES:(0x09*4)
+	MOVW $0x0, %ES:(0x09*4+2)
+	STI
+
 .LOOP:
 	JMP .LOOP
 
+PRINT:
+	PUSHA
+PRINTSTART:
+	XORB %BH, %BH
+	MOVB $0x0F, %BL
+	MOVB $0x0E, %AH
+	LODSB
+	OR %AL, %AL
+	JZ PRINTDONE
+	INT $0x10
+	JMP PRINTSTART
+PRINTDONE:
+	POPA
+	RET
+
+CHAR: .WORD 0x0000
 TEST: .ASCIZ "test\r\n"
+TEST2: .ASCIZ "test2\r\n"
+TEST3: .ASCIZ "test3\r\n"

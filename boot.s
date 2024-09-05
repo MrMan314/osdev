@@ -3,10 +3,9 @@
 .GLOBAL _start
 
 _start:
-	CLI
-	MOVW $0x9000, %SP
-	MOVW %BP, %SP
-	MOV %DL, BD
+	MOVW $0x0013, %AX
+	INT $0x10
+
 	LJMP $0x0, $MAIN
 
 MAIN:
@@ -17,9 +16,6 @@ MAIN:
 	MOV %AX, %GS
 	MOV %AX, %SS
 	MOVW $0x7C00, %SP
-
-	MOVW $0x0013, %AX
-	INT $0x10
 
 	MOV $HELLO, %SI
 	CALL PRINT
@@ -33,11 +29,11 @@ MAIN:
 	XOR %DH, %DH
 	XOR %BX, %BX
 	MOV %BX, %ES
-	MOV $0x7E00, %BX
+	MOV $0x1000, %BX
 	INT $0x13
 	JC .ERR
 
-	LJMP $0x0, $0x7E00
+	LJMP $0x0, $0x1000
 
 	JC .ERR2
 PRINT:
