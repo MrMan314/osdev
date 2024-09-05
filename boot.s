@@ -4,66 +4,30 @@
 
 _start:
 	CLI
-	MOVW $0x9000, %SP
-	MOVW %BP, %SP
-	MOV %DL, BD
 	LJMP $0x0, $MAIN
 
 MAIN:
 	XOR %AX, %AX
 	MOV %AX, %DS
-	MOV %AX, %ES
 	MOV %AX, %FS
 	MOV %AX, %GS
 	MOV %AX, %SS
-	MOVW $0x7C00, %SP
+	MOVW $0x9C00, %SP
 
 	MOVW $0x0013, %AX
 	INT $0x10
 
-	MOV $HELLO, %SI
-	CALL PRINT
-
-	XOR %AX, %AX
-	MOV %AX, %DS
-	CLD
-
 	MOV $0x027D, %AX
 	MOV $0x0002, %CX
-	XOR %DH, %DH
 	MOV $0xA000, %BX
 	MOV %BX, %ES
-	MOV $0x0000, %BX
+	XOR %DH, %DH
+	XOR %BX, %BX
 	INT $0x13
-	JC .ERR
-
-	JMP .LOOP	
-
-PRINT:
-	PUSHA
-PRINTSTART:
-	XORB %BH, %BH
-	MOVB $0x0F, %BL
-	MOVB $0x0E, %AH
-	LODSB
-	OR %AL, %AL
-	JZ PRINTDONE
-	INT $0x10
-	JMP PRINTSTART
-PRINTDONE:
-	POPA
-	RET
-
-.ERR:
-	MOV $ERR, %SI
-	CALL PRINT
 .LOOP:
 	JMP .LOOP
 
 
-BD: .WORD 0x0000
-HELLO: .ASCIZ "hello vro\r\n"
-ERR: .ASCIZ "help vro\r\n"
 .FILL 0x1EB-(.-_start), 0x01, 0x00
 .ASCIZ "im gonna touch you"
 .WORD 0xAA55
