@@ -3,8 +3,8 @@
 .GLOBAL _start
 
 _start:
-	MOVW $0x0013, %AX
-	INT $0x10
+//	MOVW $0x0013, %AX
+//	INT $0x10
 
 	LJMP $0x0, $MAIN
 

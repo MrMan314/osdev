@@ -5,15 +5,21 @@
 _start:
 	JMP MAIN
 
-INTHAND:
+INTHAND:/*
 	MOV $0xA000, %AX
 	MOV %AX, %ES
 
-	PUSH %AX
+	PUSH %AX*/
 	IN $0x60, %AL
-	MOV $0x0F, %AH
-	XOR %DI, %DI
-	STOSW
+	MOV $0x0E, %AH
+	PUSH %BX
+	MOV $0x000F, %BX
+	INT $0x10
+	POP %BX
+//	MOV $0x0F, %AH
+
+//	XOR %DI, %DI
+//	STOSW
 
 	MOV %AL, %BL
 	MOVB %AL, CHAR
