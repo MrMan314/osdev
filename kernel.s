@@ -39,16 +39,18 @@ MAIN:
 	MOV $0x0800, %DX
 	INT $0x10
 
+	MOV $0xA000, %AX
+	MOV %AX, %ES
+
 	MOV $0x0228, %AX
 	MOV $0x0011, %CX
 	XOR %DH, %DH
 	XOR %BX, %BX
-	MOV $0x7E00, %BX
+	MOV $0xA000, %BX
 	INT $0x13
 
-	MOV $0x7E00, %SI
-	CALL DISP
-
+	XOR %AX, %AX
+	MOV %AX, %ES
 
 	MOV $TEST, %SI
 	CALL PRINT
@@ -103,7 +105,7 @@ DISPDONE:
 	RET
 
 .SECTION .rodata
-TEST: .ASCIZ "welcome to freaky os\r\n"
+TEST: .ASCIZ "welcome to freaky os\r\n > "
 KBMAP:
 	.BYTE 0
 	.BYTE 0x1b
