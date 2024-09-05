@@ -8,29 +8,21 @@ _start:
 INTHAND:/*
 	MOV $0xA000, %AX
 	MOV %AX, %ES
-
-	PUSH %AX*/
-	IN $0x60, %AL
-	MOV $0x0E, %AH
+*/
+	PUSH %AX
 	PUSH %BX
+	XOR %AX, %AX
+	IN $0x60, %AL
+	CMP $0x80, %AX
+	JGE .SKIP
+	ADD $KBMAP, %AX
+	MOV %AX, %SI
+	LODSB
+	MOV $0x0E, %AH
 	MOV $0x000F, %BX
 	INT $0x10
+	.SKIP:
 	POP %BX
-//	MOV $0x0F, %AH
-
-//	XOR %DI, %DI
-//	STOSW
-
-	MOV %AL, %BL
-	MOVB %AL, CHAR
-
-	IN $0x61, %AL
-	MOV %AL, %AH
-	OR $0x80, %AL
-	OUT %AL, $0x61
-	XCHG %AL, %AH
-	OUT %AL, $0x61
-
 	MOV $0x20, %AL
 	OUT %AL, $0x20
 	POP %AX
@@ -80,6 +72,18 @@ PRINTDONE:
 	RET
 
 CHAR: .WORD 0x0000
+.SECTION .rodata
 TEST: .ASCIZ "test\r\n"
 TEST2: .ASCIZ "test2\r\n"
 TEST3: .ASCIZ "test3\r\n"
+KBMAP:
+	.BYTE 0
+	.BYTE 0x1b
+	.ASCIZ "1234567890-=\b\tqwertyuiop[]\n"
+	.ASCIZ "asdfghjkl;'`"
+	.ASCIZ "\\zxcvbnm,./"
+	.BYTE 0
+	.BYTE 0x2a
+	.BYTE 0
+	.BYTE 0x20
+
