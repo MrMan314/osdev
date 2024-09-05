@@ -34,7 +34,22 @@ INTHAND:/*
 	IRET
 
 MAIN:
-	
+	MOV $0x02, %AH
+	XOR %BH, %BH
+	MOV $0x0800, %DX
+	INT $0x10
+
+	MOV $0x0228, %AX
+	MOV $0x0011, %CX
+	XOR %DH, %DH
+	XOR %BX, %BX
+	MOV $0x7E00, %BX
+	INT $0x13
+
+	MOV $0x7E00, %SI
+	CALL DISP
+
+
 	MOV $TEST, %SI
 	CALL PRINT
 
@@ -45,7 +60,7 @@ MAIN:
 	MOV %AX, %GS
 	MOV %AX, %SS
 	MOVW $0x1200, %SP
-	
+
 	CLI
 	XOR %AX, %AX
 	MOV %AX, %ES
@@ -71,19 +86,31 @@ PRINTDONE:
 	POPA
 	RET
 
-CHAR: .WORD 0x0000
+DISP:
+	PUSHA
+	XOR %CX, %CX
+	XOR %DX, %DX 
+DISPSTART:
+	CMP $0x5000, %CX
+	JGE DISPDONE
+	LODSB
+	MOV $0x0C, %AH
+	INT $0x10
+	INC %CX
+	JMP DISPSTART
+DISPDONE:
+	POPA
+	RET
+
 .SECTION .rodata
-TEST: .ASCIZ "test\r\n"
-TEST2: .ASCIZ "test2\r\n"
-TEST3: .ASCIZ "test3\r\n"
+TEST: .ASCIZ "welcome to freaky os\r\n"
 KBMAP:
 	.BYTE 0
 	.BYTE 0x1b
 	.ASCIZ "1234567890-=\b\tqwertyuiop[]\n"
 	.ASCIZ "asdfghjkl;'`"
 	.ASCIZ "\\zxcvbnm,./"
-	.BYTE 0
 	.BYTE 0x2a
-	.BYTE 0
+	.BYTE 0x0D
 	.BYTE 0x20
 

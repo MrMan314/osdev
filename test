@@ -2,8 +2,9 @@
 as -c boot.s -o boot.o
 ld boot.o -Ttext 0x7C00 -o boot --oformat=binary
 as -c kernel.s -o kernel.o
-ld kernel.o -Tlink.ld -o kernel --oformat=binary
+ld kernel.o -T link.ld -o kernel --oformat=binary
 dd if=/dev/zero of=floppy.img bs=1024 count=1440
 dd if=boot of=floppy.img bs=512 count=1 conv=notrunc
 dd if=kernel of=floppy.img bs=512 seek=1 conv=notrunc
+dd if=data of=floppy.img bs=512 seek=16 conv=notrunc
 qemu-system-i386 -fda floppy.img

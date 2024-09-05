@@ -24,7 +24,7 @@ MAIN:
 	MOV %AX, %DS
 	CLD
 
-	MOV $0x0240, %AX
+	MOV $0x0210, %AX
 	MOV $0x0002, %CX
 	XOR %DH, %DH
 	XOR %BX, %BX
