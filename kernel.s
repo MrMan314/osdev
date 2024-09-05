@@ -46,7 +46,7 @@ MAIN:
 	MOV $0x0011, %CX
 	XOR %DH, %DH
 	XOR %BX, %BX
-	MOV $0xA000, %BX
+	MOV $0x0000, %BX
 	INT $0x13
 
 	XOR %AX, %AX
