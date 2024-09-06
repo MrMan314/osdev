@@ -61,11 +61,9 @@ MAIN:
 	MOV %AX, %FS
 	MOV %AX, %GS
 	MOV %AX, %SS
-	MOVW $0x1200, %SP
+	MOVW $0x3000, %SP
 
 	CLI
-	XOR %AX, %AX
-	MOV %AX, %ES
 	MOVW $INTHAND, %ES:(0x09*4)
 	MOVW $0x0, %ES:(0x09*4+2)
 	STI
