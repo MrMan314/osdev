@@ -38,9 +38,9 @@ $(BOOT_OBJ): $(BOOT_SRC)
 	mkdir -p $(@D)
 	$(AS) $(AS_FLAGS)
 
-$(RGB): $(IMAGE)
+$(RGB): $(IMAGE) src/data/papyrus.ttf
 	mkdir -p $(@D)
-	magick convert $^ -resize 320x200! $@
+	magick convert $^ -resize 320x200! -gravity Center -pointsize 36 -font src/data/papyrus.ttf -annotate 0 "i cant find\nthe os vro" -resize 320x200! $@
 
 $(DATA): $(RGB) bin/data/rgb2vga
 	mkdir -p $(@D)
