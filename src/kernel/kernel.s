@@ -5,105 +5,148 @@
 _start:
 	JMP MAIN
 
-INTHAND:/*
-	MOV $0xA000, %AX
-	MOV %AX, %ES
-*/
+INTHAND:
 	PUSH %AX
 	PUSH %BX
+	PUSH %ES
+	PUSH %DI
 	XOR %AX, %AX
 	IN $0x60, %AL
-	CMP $0x80, %AX
-	JGE .SKIP
-	ADD $KBMAP, %AX
-	MOV %AX, %SI
-	LODSB
-	MOV $0x0E, %AH
-	MOV $0x000F, %BX
-	INT $0x10
+	CMP $0x48, %AX
+	JE .UP
+	CMP $0x4B, %AX
+	JE .LEFT
+	CMP $0x4D, %AX
+	JE .RIGHT
+	CMP $0x50, %AX
+	JE .DOWN
+	JNE .SKIP
+	.UP:
+	SUBW $320, POS
+	JMP .CONT
+	.LEFT:
+	DECW POS
+	JMP .CONT
+	.RIGHT:
+	INCW POS
+	JMP .CONT
+	.DOWN:
+	ADDW $320, POS
+	.CONT:
+	MOV $0xA000, %AX
+	MOV %AX, %ES
+	MOV POS, %DI
+	MOV $0x0F, %AL
+	STOSB
 	.SKIP:
+	POP %DI
+	POP %ES
 	POP %BX
 	MOV $0x20, %AL
 	OUT %AL, $0x20
 	POP %AX
 
-	AND $0x80, %BL
-	JNZ .DONE
-
 .DONE:
 	IRET
 
 MAIN:
-	MOV $0x02, %AH
-	XOR %BH, %BH
-	MOV $0x0800, %DX
-	INT $0x10
-
-	MOV $0xA000, %AX
-	MOV %AX, %ES
-
-	MOV $0x0228, %AX
-	MOV $0x0011, %CX
-	XOR %DH, %DH
-	XOR %BX, %BX
-	MOV $0x0000, %BX
-	INT $0x13
-
-	XOR %AX, %AX
-	MOV %AX, %ES
-
-	MOV $TEST, %SI
-	CALL PRINT
-
 	XOR %AX, %AX
 	MOV %AX, %DS
 	MOV %AX, %ES
 	MOV %AX, %FS
 	MOV %AX, %GS
 	MOV %AX, %SS
-	MOVW $0x3000, %SP
+	MOVW $0x9000, %SP
+
+	MOV $0x50, %AL
+	MOV $24, %BX
+	MOV $319, %CX
+	MOV $24, %DH
+	MOV $199, %DL
+	CALL RECT
 
 	CLI
 	MOVW $INTHAND, %ES:(0x09*4)
 	MOVW $0x0, %ES:(0x09*4+2)
 	STI
-
 .LOOP:
 	JMP .LOOP
 
-PRINT:
-	PUSHA
-PRINTSTART:
-	XORB %BH, %BH
-	MOVB $0x0F, %BL
-	MOVB $0x0E, %AH
-	LODSB
-	OR %AL, %AL
-	JZ PRINTDONE
-	INT $0x10
-	JMP PRINTSTART
-PRINTDONE:
-	POPA
+/*
+ * Rectangle
+ * AL: color
+ * BX: start x
+ * CX: end x
+ * DH: start y
+ * DL: end y
+ */
+
+RECT:
+	PUSH %DI
+	PUSH %ES
+
+	PUSH %BX
+	MOV $0xA000, %BX
+	MOV %BX, %ES
+	POP %BX
+
+	PUSH %DX
+	MOVZX %DH, %DX
+
+	PUSH %AX
+	MOV %DX, %AX
+	MULW COLS
+	ADDW %BX, %AX
+	MOV %AX, %DI
+	POP %AX
+	POP %DX
+
+	XOR %DH, %DH
+	XCHG %DX, %BX
+// AL: color
+// BX: end y
+// CX: end x
+// DX: start x
+.DRAW:
+	STOSB
+	PUSH %AX
+	PUSH %DX
+	MOV %DI, %AX
+	DIVW COLS
+	CMP %DX, %CX
+	JBE .NEXT
+	POP %DX
+	POP %AX
+	JMP .DRAW
+.NEXT:
+	POP %DX
+	POP %AX
+	STOSB
+	PUSH %AX
+	SUBW %CX, %DI
+	ADDW %DX, %DI
+	ADDW COLS, %DI
+	DEC %DI
+	MOV %DI, %AX
+	PUSH %DX
+	XOR %DX, %DX
+	DIVW COLS
+	CMP %AX, %BX
+	JB .NEXT2
+	POP %DX
+	POP %AX
+	JMP .DRAW
+.NEXT2:
+	POP %DX
+	POP %AX
+	POP %ES
+	POP %DI
 	RET
 
-DISP:
-	PUSHA
-	XOR %CX, %CX
-	XOR %DX, %DX 
-DISPSTART:
-	CMP $0x5000, %CX
-	JGE DISPDONE
-	LODSB
-	MOV $0x0C, %AH
-	INT $0x10
-	INC %CX
-	JMP DISPSTART
-DISPDONE:
-	POPA
-	RET
+POS: .WORD 0x0000
 
 .SECTION .rodata
-TEST: .ASCIZ "welcome to freaky os\r\n > "
+COLS: .WORD 320
 KBMAP:
 	.BYTE 0
 	.BYTE 0x1b
@@ -113,4 +156,6 @@ KBMAP:
 	.BYTE 0x2a
 	.BYTE 0x0D
 	.BYTE 0x20
+	.SPACE 14
+	.ASCII "U..L.R..D"
 

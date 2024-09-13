@@ -28,12 +28,12 @@ run: $(FLOPPY)
 clean:
 	rm -rf $^ $(FLOPPY) bin/
 
-$(FLOPPY): $(BOOT) $(KERNEL) $(DATA)
+$(FLOPPY): $(BOOT) $(KERNEL) #$(DATA)
 	mkdir -p $(@D)
 	dd if=/dev/zero of=$@ bs=512 count=2880
 	dd if=bin/boot/boot of=$@ bs=512 count=1 conv=notrunc
 	dd if=bin/kernel/kernel of=$@ bs=512 seek=1 conv=notrunc
-	dd if=bin/data/data of=$@ bs=512 seek=16 conv=notrunc
+#	dd if=bin/data/data of=$@ bs=512 seek=16 conv=notrunc
 
 $(BOOT): $(BOOT_OBJ)
 	mkdir -p $(@D)
