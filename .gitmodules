@@ -1,0 +1,3 @@
+[submodule "src/data/rgb2vga"]
+	path = src/data/rgb2vga
+	url = git@gist.github.com:509f665081f52b3dbdfc892b39cc3eab.git

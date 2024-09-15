@@ -55,11 +55,11 @@ $(RGB): $(IMAGE)
 	mkdir -p $(@D)
 	magick convert $^ -resize 320x64! $@
 
-$(DATA): $(RGB) bin/data/rgb2vga
+$(DATA): $(RGB) bin/data/rgb2vga/rgb2vga
 	mkdir -p $(@D)
-	bin/data/rgb2vga < $(RGB) > $@
+	bin/data/rgb2vga/rgb2vga < $(RGB) > $@
 
-bin/data/rgb2vga: src/data/rgb2vga.c
+bin/data/rgb2vga/rgb2vga: src/data/rgb2vga/rgb2vga.c
 	mkdir -p $(@D)
 	g++ $^ -o $@
 
