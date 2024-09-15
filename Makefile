@@ -42,11 +42,11 @@ $(RGB): $(IMAGE) src/data/papyrus.ttf
 	mkdir -p $(@D)
 	magick convert $^ -resize 320x200! -gravity Center -pointsize 36 -font src/data/papyrus.ttf -annotate 0 "i cant find\nthe os vro" -resize 320x200! $@
 
-$(DATA): $(RGB) bin/data/rgb2vga
+$(DATA): $(RGB) bin/data/rgb2vga/rgb2vga
 	mkdir -p $(@D)
-	bin/data/rgb2vga < $(RGB) > $@
+	bin/data/rgb2vga/rgb2vga < $(RGB) > $@
 
-bin/data/rgb2vga: src/data/rgb2vga.c
+bin/data/rgb2vga/rgb2vga: src/data/rgb2vga/rgb2vga.c
 	mkdir -p $(@D)
 	g++ $^ -o $@
 
