@@ -6,6 +6,18 @@ _start:
 	CLI
 	LJMP $0x0, $MAIN
 
+INTHAND:
+	MOV $0xA000, %AX
+	MOV %AX, %ES
+	XOR %AX, %AX
+	XOR %DI, %DI
+.DRAW:
+	XOR %AX, %AX
+	STOSW
+	CMPW $63999, %DI
+	JB .DRAW
+	IRET
+
 MAIN:
 	XOR %AX, %AX
 	MOV %AX, %DS
@@ -24,9 +36,14 @@ MAIN:
 	XOR %DH, %DH
 	XOR %BX, %BX
 	INT $0x13
+	XOR %AX, %AX
+	MOV %AX, %ES
+	CLI
+	MOVW $INTHAND, %ES:(0x09*4)
+	MOVW $0x0, %ES:(0x09*4+2)
+	STI
 .LOOP:
 	JMP .LOOP
-
 
 .FILL 0x1EB-(.-_start), 0x01, 0x00
 .ASCIZ "im gonna touch you"
