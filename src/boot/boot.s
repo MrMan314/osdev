@@ -53,9 +53,50 @@ MAIN:
 	INT $0x13
 	JC .ERR
 
+	MOV $0x02, %AH
+	XOR %BH, %BH
+	XOR %DX, %DX
+	INT $0x10
+
+	MOV $0xA000, %AX
+	MOV %AX, %ES
+
+	MOV $0x027D, %AX
+	MOV $0x0011, %CX
+	XOR %DH, %DH
+	XOR %BX, %BX
+	MOV $0x0000, %BX
+	INT $0x13
+
+	XOR %AX, %AX
+	MOV %AX, %ES
+
+	MOVW $FIND_OS, %ES:(0x09*4)
+	MOVW $0x0, %ES:(0x09*4+2)
+
+	STI
+
+	.WAIT:
+	JMP .WAIT
+
 	LJMP $0x0, $0x1000
 
 	JC .ERR2
+
+FIND_OS:
+	INB $0x60, %AL
+	CMP $0x21, %AL
+	JNE .FIND_DONE
+	POP %AX
+	ADD $0x02, %AX
+	PUSH %AX
+	MOV $FOUND, %SI
+	CALL PRINT
+	.FIND_DONE:
+	MOV $0x20, %AL
+	OUTB %AL, $0x20
+	IRET
+
 PRINT:
 	PUSHA
 PRINTSTART:
@@ -84,6 +125,7 @@ PRINTDONE:
 
 BD: .WORD 0x0000
 HELLO: .ASCIZ "hello vro\r\n"
+FOUND: .ASCIZ "i found the os!!!11\r\n"
 ERR: .ASCIZ "help vro\r\n"
 ERR2: .ASCIZ "VRO HELP ME\r\n"
 .FILL 510-(.-_start), 0x01, 0x00

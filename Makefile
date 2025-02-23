@@ -53,7 +53,7 @@ $(KERNEL_OBJ): $(KERNEL_SRC)
 
 $(RGB): $(IMAGE)
 	mkdir -p $(@D)
-	magick convert $^ -resize 320x64! $@
+	magick $^ -resize 320x200! -gravity Center -pointsize 36 -font src/data/papyrus.ttf -annotate 0 "i cant find\nthe os vro" -pointsize 16 -annotate +0+80 "press F to find" $@
 
 $(DATA): $(RGB) bin/data/rgb2vga/rgb2vga
 	mkdir -p $(@D)
