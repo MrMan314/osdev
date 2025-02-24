@@ -9,12 +9,12 @@ PRINT_HEX:
 	PUSH %BX
 	PUSH %SI
 	PUSH %AX
-	XOR %AH, %AH
 	SHR $4, %AL
 	AND $0x0F, %AL
-	ADD $HEX, %AX
-	MOV %AX, %SI
-	LODSB
+	XOR %AH, %AH
+	LEA HEX, %BX
+	ADD %AX, %BX
+	MOV (%BX), %AX
 	XORB %BH, %BH
 	MOVB $0x0F, %BL
 	MOVB $0x0E, %AH
@@ -22,9 +22,10 @@ PRINT_HEX:
 	POP %AX
 	PUSH %AX
 	AND $0x0F, %AL
-	ADD $HEX, %AX
-	MOV %AX, %SI
-	LODSB
+	XOR %AH, %AH
+	LEA HEX, %BX
+	ADD %AX, %BX
+	MOV (%BX), %AX
 	XORB %BH, %BH
 	MOVB $0x0F, %BL
 	MOVB $0x0E, %AH
