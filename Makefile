@@ -5,7 +5,7 @@ BOOT_OBJ = $(subst src/,bin/,$(BOOT_SRC:.s=.o))
 KERNEL_OBJ = $(subst src/,bin/,$(KERNEL_SRC:.s=.o))
 IMAGE = src/data/image.png
 
-AS_FLAGS = -c $^ -o $@
+AS_FLAGS = -c $(subst bin/,src/,$(@:.o=.s)) -o $@
 
 BOOT_LD_FLAGS = $^ -o $@ -Ttext 0x7C00 --oformat=binary -v
 KERNEL_LD_FLAGS = $^ -o $@ -T src/kernel/link.ld --oformat=binary -v
