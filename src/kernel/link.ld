@@ -1,10 +1,11 @@
 OUTPUT_FORMAT(binary)
-ENTRY(_start)
 SECTIONS {
 	. = 0x1000;
+	PROVIDE(_start = .);
 
 	.text	ALIGN(0x1000):
 		ALIGN(0x1000) {
+			*(.kmain)
 			*(.text)
 		}
 
@@ -23,4 +24,8 @@ SECTIONS {
 			*(.COMMON)
 			*(.bss)
 		}
+
+	/DISCARD/ : {
+		*(.note.gnu.property)
+	}
 }
