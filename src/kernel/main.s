@@ -15,7 +15,34 @@ _start:
 		JMP PRINT_LOOP
 	.DONE:
 
-	MOV $31, %ECX
+	// PIC initialization sequence
+	MOV $0x11, %AL
+	OUT %AL, $0x20
+	OUT %AL, $0xA0
+
+	// set vector offsets for pic 1 & 2
+	MOV $0x20, %AL
+	OUT %AL, $0x21
+	MOV $0x28, %AL
+	OUT %AL, $0xA1
+
+	// notify PICs of eachothers' presence
+	MOV $0x04, %AL
+	OUT %AL, $0x21
+	MOV $0x02, %AL
+	OUT %AL, $0xA1
+
+	// set PIC to 8086 mode
+	MOV $0x01, %AL
+	OUT %AL, $0x21
+	OUT %AL, $0xA1
+
+	// unmask PICs
+	XOR %AL, %AL
+	OUT %AL, $0x21
+	OUT %AL, $0xA1
+
+	MOV $47, %ECX
 	FILL_IDT:
 	MOV %CX, %AX
 	SHL $3, %AX
@@ -23,12 +50,20 @@ _start:
 	ADD %AX, %BX
 	MOV %BX, %DI
 	LEA OFFSET_LOW, %EBX
+
 	LEA ISR_BEGIN, %EAX
 	MOV %ECX, %EDX
-	SHL $4, %EDX
+	SHL $2, %EDX
 	ADD %EDX, %EAX
+	MOV (%EAX), %EAX
+
+
+//	MOV %ECX, %EDX
+//	SHL $2, %EDX
+//	ADD %EDX, %EAX
 	MOV %AX, (%EBX)
 	SHR $16, %EAX
+
 	LEA OFFSET_HIGH, %EBX
 	MOV %AX, (%EBX)
 	LEA IDT_ENTRY, %SI
