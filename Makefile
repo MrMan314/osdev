@@ -7,8 +7,8 @@ IMAGE = src/data/image.png
 
 AS_FLAGS = -c $(subst bin/,src/,$(@:.o=.s)) -o $@
 
-BOOT_LD_FLAGS = $^ -o $@ -Ttext 0x7C00 --oformat=binary -v
-KERNEL_LD_FLAGS = $^ -o $@ -T src/kernel/link.ld --oformat=binary -v
+BOOT_LD_FLAGS = $^ -o $@ -Ttext 0x7C00 --oformat=binary
+KERNEL_LD_FLAGS = $^ -o $@ -T src/kernel/link.ld --oformat=binary
 QEMU_FLAGS = -drive file=$<,index=0,if=floppy,format=raw -serial stdio
 
 AS = as
