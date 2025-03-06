@@ -14,7 +14,7 @@ KBD:
 	JNE .SHOW
 	MOV CURSOR_POSITION, %EDI
 	CALL NL
-	JMP .MOVE
+	JMP .SKIP
 	.SHOW:
 	LEA KBMAP, %EBX
 	ADD %EAX, %EBX
@@ -28,7 +28,6 @@ KBD:
 	.MOVE:
 	CALL CURSOR_MOVE
 
-	MOV %EDI, CURSOR_POSITION
 	.SKIP:
 	JMP IRQ_DONE
 
@@ -39,7 +38,7 @@ KBMAP:
 	.ASCIZ "1234567890-=\b\tqwertyuiop[]\n"
 	.ASCIZ "asdfghjkl;'`"
 	.ASCIZ "\\zxcvbnm,./"
-	.BYTE 0x2a
+	.BYTE 0x00
 	.BYTE 0x00
 	.BYTE 0x20
-
+.FILL 0x80-(.-KBMAP), 1, 0
